@@ -1,4 +1,5 @@
-﻿using LibraCase.Manager;
+﻿using LibraCase.Game;
+using LibraCase.Manager;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,9 +12,11 @@ namespace LibraCase.Player
     {
         [SerializeField] private bool _gameOn;
         [HideInInspector] private Camera _mainCamera;
+        [SerializeField] private GameObject _bombPrefab;
         
         private void Start()
         {
+            _gameOn = true;
             _mainCamera = Camera.main;
             GameManager.Instance.OnStartedLevel += OnStartedLevel;
             GameManager.Instance.OnStopedLevel += OnStopedLevel;
@@ -35,7 +38,12 @@ namespace LibraCase.Player
                 {
                     if (hit.collider.CompareTag("Block"))
                     {
-                        
+                        BlockController block = hit.collider.GetComponent<BlockController>();
+                        if (block != null && !block._hasBomb)
+                        {
+                            var instantiated = Instantiate(_bombPrefab, hit.transform);
+                            block._hasBomb = true;
+                        }
                     }
                 }
             }
